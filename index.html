@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 8 Calc</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #f1f5f9;
+  color: #0f172a;
+  min-height: 100vh;
+}
+
+:root {
+  --accent: #4f46e5;
+  --accent-lt: #eef2ff;
+  --accent-mid: #818cf8;
+  --green: #059669;
+  --green-lt: #f0fdf4;
+  --red: #dc2626;
+  --red-lt: #fef2f2;
+  --amber: #d97706;
+  --amber-lt: #fffbeb;
+  --t2: #64748b;
+  --t3: #94a3b8;
+  --border: #e2e8f0;
+  --surface: #fff;
+  --r: 8px;
+  --rl: 12px;
+}
+
+/* NAV */
+nav {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.logomark {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.logomark svg { width: 16px; height: 16px; }
+.brand { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -.02em; }
+.pipe { width: 1px; height: 18px; background: var(--border); }
+.nav-sub { font-size: 13px; color: var(--t3); }
+.nav-right { display: flex; align-items: center; gap: 6px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+.live-lbl { font-size: 12px; color: var(--t3); }
+
+/* LAYOUT */
+.wrap {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  overflow: hidden;
+}
+.card + .card { margin-top: 12px; }
+
+.ch {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+  display: flex; align-items: center; gap: 8px;
+}
+.ch-icon {
+  width: 24px; height: 24px;
+  background: var(--accent-lt);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ch-icon svg { width: 13px; height: 13px; stroke: var(--accent); }
+.ch-title { font-size: 13px; font-weight: 600; color: #0f172a; }
+.cb { padding: 16px; }
+
+/* FIELDS */
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+label { display: block; font-size: 11px; font-weight: 500; color: var(--t2); margin-bottom: 4px; }
+
+.iw { position: relative; }
+.pfx, .sfx {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--t3); pointer-events: none; font-weight: 500;
+}
+.pfx { left: 10px; }
+.sfx { right: 10px; }
+
+input[type=text] {
+  width: 100%; height: 38px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px; font-weight: 500; color: #0f172a;
+  background: #fff; outline: none;
+  padding: 0 10px 0 26px;
+  transition: border-color .12s, box-shadow .12s;
+  font-family: inherit;
+}
+input[type=text].nopfx { padding-left: 10px; }
+input[type=text].sfxpad { padding-right: 28px; }
+input[type=text]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+input[type=text]::placeholder { color: #cbd5e1; font-weight: 400; }
+input[type=text].computed {
+  background: var(--accent-lt); border-color: #c7d2fe;
+  color: var(--accent); font-weight: 600;
+}
+
+select {
+  width: 100%; height: 38px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  font-size: 13px; font-weight: 500; color: #0f172a;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
+  padding: 0 30px 0 10px;
+  outline: none; cursor: pointer; appearance: none;
+  transition: border-color .12s, box-shadow .12s;
+  font-family: inherit;
+}
+select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.mt10 { margin-top: 10px; }
+.hint { font-size: 10px; color: var(--t3); margin-top: 3px; }
+.computed-note { font-size: 10px; color: var(--accent); margin-top: 3px; font-weight: 500; }
+.sep { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+.manual-label {
+  font-size: 10px; font-weight: 600; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px;
+}
+
+/* ADDRESS */
+.addr-wrap { position: relative; }
+.addr-inp {
+  width: 100%; height: 38px;
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  font-size: 13px; color: #0f172a; background: #fff;
+  outline: none; padding: 0 76px 0 10px;
+  transition: border-color .12s, box-shadow .12s;
+  font-family: inherit;
+}
+.addr-inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+.addr-inp::placeholder { color: #cbd5e1; }
+.addr-btn {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  height: 30px; padding: 0 12px;
+  background: var(--accent); color: #fff; border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background .12s, opacity .12s;
+  white-space: nowrap;
+}
+.addr-btn:hover { background: #4338ca; }
+.addr-btn:disabled { opacity: .5; cursor: default; }
+.addr-status { margin-top: 6px; font-size: 11px; color: var(--t3); min-height: 15px; }
+.addr-status.ok   { color: var(--green); }
+.addr-status.err  { color: var(--red); }
+.addr-status.spin { color: var(--accent); }
+
+/* FMR RESULT */
+.fmr-box {
+  margin-top: 12px; border-radius: var(--r);
+  border: 1.5px solid #c7d2fe; background: var(--accent-lt);
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.fmr-empty {
+  margin-top: 12px; border-radius: var(--r);
+  border: 1.5px dashed var(--border);
+  padding: 10px; text-align: center; font-size: 12px; color: var(--t3);
+}
+.fmr-lbl { font-size: 11px; font-weight: 600; color: var(--accent); }
+.fmr-sub { font-size: 10px; color: #818cf8; margin-top: 1px; }
+.fmr-amt { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: -.02em; }
+.fmr-mo  { font-size: 12px; color: #818cf8; }
+
+/* RESULTS */
+.placeholder { padding: 48px 16px; text-align: center; }
+.ph-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--accent-lt);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+}
+.ph-icon svg { width: 18px; height: 18px; stroke: var(--accent-mid); }
+.placeholder p { font-size: 13px; color: var(--t3); line-height: 1.6; }
+
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 8px; margin-bottom: 10px;
+}
+.metric {
+  background: #f8fafc; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 12px;
+}
+.mlbl {
+  font-size: 10px; font-weight: 600; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px;
+}
+.mval {
+  font-size: 20px; font-weight: 700; color: #0f172a;
+  letter-spacing: -.02em; line-height: 1;
+}
+.msub { font-size: 10px; color: var(--t3); margin-top: 4px; }
+.metric.pos { border-color: #bbf7d0; background: var(--green-lt); }
+.metric.neg { border-color: #fecaca; background: var(--red-lt); }
+.metric.warn { border-color: #fde68a; background: var(--amber-lt); }
+.metric.pos .mval { color: var(--green); }
+.metric.neg .mval { color: var(--red); }
+.metric.warn .mval { color: var(--amber); }
+
+.verdict {
+  border-radius: var(--r); padding: 12px 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.verdict.pos  { background: var(--green-lt); border: 1px solid #bbf7d0; }
+.verdict.neg  { background: var(--red-lt);   border: 1px solid #fecaca; }
+.verdict.warn { background: var(--amber-lt); border: 1px solid #fde68a; }
+.vi {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.verdict.pos  .vi { background: var(--green); }
+.verdict.neg  .vi { background: var(--red); }
+.verdict.warn .vi { background: var(--amber); }
+.vi svg { width: 10px; height: 10px; }
+.vt { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.verdict.pos  .vt { color: #065f46; }
+.verdict.neg  .vt { color: #991b1b; }
+.verdict.warn .vt { color: #92400e; }
+.vb { font-size: 12px; line-height: 1.55; }
+.verdict.pos  .vb { color: #064e3b; }
+.verdict.neg  .vb { color: #7f1d1d; }
+.verdict.warn .vb { color: #78350f; }
+
+
+/* ── MOBILE ── */
+@media (max-width: 700px) {
+  nav {
+    padding: 0 16px;
+    height: 46px;
+  }
+  .nav-sub { display: none; }
+  .live-lbl { display: none; }
+
+  .wrap {
+    grid-template-columns: 1fr;
+    padding: 12px 12px 28px;
+    gap: 12px;
+  }
+
+  .g2 { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .g3 { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .cb { padding: 14px 12px; }
+  .ch { padding: 9px 12px; }
+
+  .mgrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .mval { font-size: 17px; }
+
+  .placeholder { padding: 32px 12px; }
+
+  .source-note { font-size: 9px; }
+}
+
+@media (max-width: 400px) {
+  .g2 { grid-template-columns: 1fr; }
+  .g3 { grid-template-columns: 1fr; }
+  .mgrid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <div class="logomark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <rect x="1" y="10" width="4" height="6" rx="1.5" fill="white"/>
+        <rect x="7" y="6" width="4" height="10" rx="1.5" fill="white"/>
+        <rect x="13" y="2" width="4" height="14" rx="1.5" fill="white"/>
+      </svg>
+    </div>
+    <span class="brand">Section 8 Calc</span>
+    <span class="nav-sub">free · HUD FY2024 data</span>
+  </div>
+  <div class="nav-right">
+    <div class="live-dot"></div>
+    <span class="live-lbl">HUD FY2024 &middot; free to use</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- LEFT -->
+  <div>
+    <div class="card">
+      <div class="ch">
+        <div class="ch-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span class="ch-title">Property details</span>
+      </div>
+      <div class="cb">
+        <div class="g2">
+          <div class="field">
+            <label>Purchase price</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="price" placeholder="150,000" oninput="autoCalc()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Down payment</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="down" placeholder="30,000" oninput="autoCalc()">
+            </div>
+          </div>
+        </div>
+        <div class="g3 mt10">
+          <div class="field">
+            <label>Interest rate</label>
+            <div class="iw">
+              <input type="text" id="rate" placeholder="7.0" class="nopfx sfxpad" oninput="autoCalc()">
+              <span class="sfx">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Loan term</label>
+            <select id="term" onchange="autoCalc()">
+              <option value="30">30 yr</option>
+              <option value="20">20 yr</option>
+              <option value="15">15 yr</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Monthly mortgage</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="mortgage" placeholder="——" class="computed" oninput="calc()">
+            </div>
+            <div class="computed-note" id="cnote">Auto-calculated</div>
+          </div>
+        </div>
+
+        <div class="sep" style="margin:12px 0"></div>
+        <div class="manual-label" style="margin-bottom:10px">Optional monthly costs</div>
+
+        <div class="g3">
+          <div class="field" style="margin-bottom:0">
+            <label>Property taxes</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="taxes" placeholder="150" oninput="calc()">
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Insurance</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="insurance" placeholder="80" oninput="calc()">
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Prop. manager</label>
+            <div class="iw"><span class="pfx">$</span>
+              <input type="text" id="mgmt" placeholder="100" oninput="calc()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <div class="ch-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <span class="ch-title">HUD fair market rent <span style="font-weight:400;color:var(--t3)">(Section 8 Rent)</span></span>
+      </div>
+      <div class="cb">
+        <div class="g2">
+          <div class="field">
+            <label>State</label>
+            <select id="state" onchange="populateCounties()"><option value="">Select state</option></select>
+          </div>
+          <div class="field">
+            <label>Bedrooms</label>
+            <select id="beds" onchange="loadFMR()">
+              <option value="0">Studio</option>
+              <option value="1">1 bed</option>
+              <option value="2" selected>2 bed</option>
+              <option value="3">3 bed</option>
+              <option value="4">4 bed</option>
+            </select>
+          </div>
+        </div>
+        <div class="field mt10" style="margin-bottom:0">
+          <label>County / metro area</label>
+          <select id="county" onchange="loadFMR()"><option value="">Select a county</option></select>
+        </div>
+        <div id="fmr-display">
+          <div class="fmr-empty">Select a state and county above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+    <div class="card">
+      <div class="ch">
+        <div class="ch-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <span class="ch-title">Return analysis</span>
+      </div>
+      <div class="cb">
+        <div id="results">
+          <div class="placeholder">
+            <div class="ph-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <p>Enter property details and an address<br>(or select a county) to see your returns.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="ch">
+        <div class="ch-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <span class="ch-title">AI neighborhood checker</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:600;background:#f1f5f9;color:var(--t3);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap">Coming soon</span>
+      </div>
+      <div class="cb" style="padding:14px 16px">
+        <p style="font-size:12px;color:var(--t3);line-height:1.6">AI-generated summaries of crime trends, tenant demand, and voucher utilization for any neighborhood — so you know if the area supports Section 8 before you make an offer.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="ch">
+        <div class="ch-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span class="ch-title">Property manager marketplace</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:600;background:#f1f5f9;color:var(--t3);border:1px solid var(--border);border-radius:20px;padding:2px 8px;white-space:nowrap">Coming soon</span>
+      </div>
+      <div class="cb" style="padding:14px 16px">
+        <p style="font-size:12px;color:var(--t3);line-height:1.6">Find Section 8-experienced property managers in your target market, with verified reviews from other investors and transparent fee structures.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const FMR={
+  "AL":{name:"Alabama",counties:{"Jefferson County":[521,621,785,1023,1184],"Mobile County":[600,683,867,1139,1323],"Madison County (Huntsville)":[666,778,966,1289,1487],"Montgomery County":[612,724,870,1136,1340],"Shelby County":[773,898,1134,1521,1823]}},
+  "AZ":{name:"Arizona",counties:{"Maricopa County (Phoenix)":[1024,1151,1378,1919,2321],"Pima County (Tucson)":[810,942,1162,1604,1988],"Yavapai County":[826,944,1152,1593,1896],"Coconino County":[896,1019,1267,1723,2043]}},
+  "CA":{name:"California",counties:{"Los Angeles County":[1522,1876,2378,3133,3641],"San Diego County":[1728,2076,2627,3570,4225],"Orange County":[1817,2175,2749,3725,4428],"Sacramento County":[1113,1314,1657,2274,2753],"Fresno County":[794,929,1162,1594,1943],"Riverside County":[1168,1406,1777,2443,2986],"San Bernardino County":[1168,1406,1777,2443,2986],"Kern County":[766,888,1113,1526,1860],"Alameda County (Oakland)":[1712,2020,2549,3496,4278],"San Francisco County":[2095,2598,3233,4429,5336]}},
+  "CO":{name:"Colorado",counties:{"Denver County":[1283,1453,1784,2467,3009],"Arapahoe County":[1283,1453,1784,2467,3009],"El Paso County (Colorado Springs)":[985,1130,1414,1944,2373],"Jefferson County":[1283,1453,1784,2467,3009],"Adams County":[1283,1453,1784,2467,3009],"Larimer County (Fort Collins)":[1137,1295,1622,2244,2762]}},
+  "FL":{name:"Florida",counties:{"Miami-Dade County":[1430,1645,2049,2726,3287],"Broward County":[1430,1645,2049,2726,3287],"Palm Beach County":[1372,1576,1990,2689,3262],"Hillsborough County (Tampa)":[1024,1182,1468,1990,2431],"Orange County (Orlando)":[1074,1228,1537,2089,2555],"Pinellas County":[990,1149,1431,1942,2370],"Duval County (Jacksonville)":[951,1093,1364,1847,2255],"Polk County":[829,966,1206,1651,2008],"Seminole County":[1074,1228,1537,2089,2555],"Lee County (Fort Myers)":[1100,1266,1581,2143,2614],"Osceola County":[1074,1228,1537,2089,2555]}},
+  "GA":{name:"Georgia",counties:{"Fulton County (Atlanta)":[1152,1310,1594,2175,2632],"DeKalb County":[1152,1310,1594,2175,2632],"Gwinnett County":[1152,1310,1594,2175,2632],"Cobb County":[1152,1310,1594,2175,2632],"Clayton County":[955,1088,1323,1803,2183],"Chatham County (Savannah)":[885,1021,1263,1721,2097]}},
+  "IL":{name:"Illinois",counties:{"Cook County (Chicago)":[960,1117,1323,1648,1939],"DuPage County":[1117,1295,1566,1983,2399],"Lake County":[1117,1295,1566,1983,2399],"Will County":[960,1117,1323,1648,1939],"Sangamon County (Springfield)":[642,749,930,1204,1429]}},
+  "LA":{name:"Louisiana",counties:{"Orleans Parish (New Orleans)":[834,976,1228,1640,1976],"Jefferson Parish":[834,976,1228,1640,1976],"East Baton Rouge Parish":[789,937,1183,1593,1885],"Caddo Parish (Shreveport)":[630,742,929,1241,1452],"St. Tammany Parish":[834,976,1228,1640,1976]}},
+  "MD":{name:"Maryland",counties:{"Montgomery County":[1803,2045,2544,3015,3516],"Prince George's County":[1803,2045,2544,3015,3516],"Baltimore City":[919,1058,1284,1668,1990],"Baltimore County":[1056,1195,1448,1924,2354],"Anne Arundel County":[1284,1453,1768,2275,2814]}},
+  "MI":{name:"Michigan",counties:{"Wayne County (Detroit)":[807,905,1093,1412,1679],"Oakland County":[1004,1126,1361,1751,2085],"Macomb County":[807,905,1093,1412,1679],"Kent County (Grand Rapids)":[826,937,1148,1513,1800],"Washtenaw County (Ann Arbor)":[1049,1196,1472,1936,2302]}},
+  "MN":{name:"Minnesota",counties:{"Hennepin County (Minneapolis)":[1038,1199,1494,2019,2487],"Ramsey County (St. Paul)":[1038,1199,1494,2019,2487],"Dakota County":[1038,1199,1494,2019,2487],"Anoka County":[1038,1199,1494,2019,2487],"St. Louis County (Duluth)":[658,761,965,1305,1537]}},
+  "NC":{name:"North Carolina",counties:{"Mecklenburg County (Charlotte)":[1007,1160,1432,1956,2382],"Wake County (Raleigh)":[1092,1263,1574,2161,2617],"Guilford County (Greensboro)":[763,884,1087,1482,1792],"Forsyth County (Winston-Salem)":[726,843,1037,1422,1718],"Durham County":[1046,1205,1494,2049,2475]}},
+  "NJ":{name:"New Jersey",counties:{"Essex County (Newark)":[1321,1511,1848,2324,2749],"Bergen County":[1558,1764,2160,2724,3245],"Hudson County":[1558,1764,2160,2724,3245],"Middlesex County":[1310,1494,1824,2319,2773],"Camden County":[1032,1183,1432,1856,2177]}},
+  "NY":{name:"New York",counties:{"New York County (Manhattan)":[2100,2570,3310,4290,4960],"Kings County (Brooklyn)":[1980,2420,3140,3980,4560],"Queens County":[1980,2420,3140,3980,4560],"Bronx County":[1980,2420,3140,3980,4560],"Erie County (Buffalo)":[685,798,973,1263,1481],"Monroe County (Rochester)":[734,857,1040,1357,1597],"Onondaga County (Syracuse)":[666,778,960,1254,1477]}},
+  "OH":{name:"Ohio",counties:{"Cuyahoga County (Cleveland)":[689,810,994,1299,1555],"Franklin County (Columbus)":[803,939,1163,1566,1903],"Hamilton County (Cincinnati)":[793,912,1128,1476,1757],"Summit County (Akron)":[659,768,960,1249,1476],"Montgomery County (Dayton)":[651,762,941,1239,1461]}},
+  "PA":{name:"Pennsylvania",counties:{"Philadelphia County":[900,1063,1297,1657,1969],"Allegheny County (Pittsburgh)":[769,883,1087,1387,1643],"Montgomery County":[1114,1267,1551,1980,2373],"Bucks County":[1114,1267,1551,1980,2373],"Delaware County":[1114,1267,1551,1980,2373]}},
+  "TN":{name:"Tennessee",counties:{"Shelby County (Memphis)":[793,902,1109,1448,1694],"Davidson County (Nashville)":[1013,1178,1460,1990,2412],"Knox County (Knoxville)":[729,856,1067,1416,1716],"Hamilton County (Chattanooga)":[743,869,1083,1431,1723]}},
+  "TX":{name:"Texas",counties:{"Harris County (Houston)":[874,999,1243,1643,1996],"Dallas County":[957,1086,1348,1786,2181],"Tarrant County (Fort Worth)":[957,1086,1348,1786,2181],"Bexar County (San Antonio)":[842,968,1194,1583,1924],"Travis County (Austin)":[1254,1444,1782,2398,2920],"Collin County":[1048,1200,1495,1994,2451],"El Paso County":[680,778,967,1283,1543],"Denton County":[1048,1200,1495,1994,2451]}},
+  "VA":{name:"Virginia",counties:{"Fairfax County":[1803,2045,2544,3015,3516],"Virginia Beach City":[1068,1220,1541,1997,2393],"Chesterfield County (Richmond)":[915,1054,1311,1735,2079],"Henrico County":[915,1054,1311,1735,2079],"Prince William County":[1803,2045,2544,3015,3516]}},
+  "WA":{name:"Washington",counties:{"King County (Seattle)":[1706,1927,2380,3291,4032],"Pierce County (Tacoma)":[1341,1532,1898,2635,3243],"Snohomish County":[1706,1927,2380,3291,4032],"Spokane County":[787,913,1131,1567,1910],"Clark County (Vancouver)":[1166,1327,1643,2280,2797]}}
+};
+
+let currentFMR=null;
+const $=id=>document.getElementById(id);
+const $m=v=>parseFloat(String(v).replace(/[$,%,\s]/g,''))||0;
+const fm=n=>'$'+Math.round(n).toLocaleString();
+const fp=n=>n.toFixed(2)+'%';
+
+function pmt(p,r,y){
+  if(!p||!r||!y)return 0;
+  const mr=r/100/12,n=y*12;
+  return mr===0?p/n:p*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1);
+}
+
+function autoCalc(){
+  const price=$m($('price').value),down=$m($('down').value);
+  const rate=$m($('rate').value),term=parseInt($('term').value);
+  const mEl=$('mortgage'),note=$('cnote');
+  const loan=price-down;
+  if(loan>0&&rate>0){
+    mEl.value=Math.round(pmt(loan,rate,term)).toLocaleString();
+    mEl.classList.add('computed');
+    note.textContent='Auto-calculated \u00b7 '+fp(rate)+' / '+term+' yr';
+  } else {
+    mEl.classList.remove('computed');
+    note.textContent='Enter price, down & rate to auto-fill';
+  }
+  calc();
+}
+
+async function lookupAddr(){
+  const addr=$('addr').value.trim();
+  if(!addr)return;
+  const btn=$('addr-btn'),st=$('addr-status');
+  btn.disabled=true; btn.textContent='Looking up...';
+  setStatus('spin','Geocoding with Census Bureau...');
+  try{
+    const url='https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+encodeURIComponent(addr)+'&benchmark=Public_AR_Current&vintage=Current_Current&layers=Counties&format=json';
+    const res=await fetch(url);
+    const data=await res.json();
+    const matches=data?.result?.addressMatches;
+    if(!matches||!matches.length){setStatus('err','Address not found. Try adding city, state, and ZIP.');return;}
+    const m=matches[0];
+    const county=m.geographies?.Counties?.[0];
+    const stAbbr=m.addressComponents?.state;
+    const countyName=county?.NAME;
+    if(!stAbbr||!countyName){setStatus('err','Could not determine county. Try a more specific address.');return;}
+    const stData=FMR[stAbbr];
+    if(!stData){setStatus('err',stAbbr+' not yet in our dataset — use the manual selector below.');return;}
+    const key=findCounty(stData.counties,countyName);
+    if(!key){setStatus('err',countyName+' County not yet in dataset — use the manual selector below.');return;}
+    $('state').value=stAbbr;
+    populateCounties(false);
+    $('county').value=key;
+    loadFMR();
+    setStatus('ok','\u2713 Found: '+key+', '+stData.name);
+  }catch(e){
+    setStatus('err','Lookup failed — check your connection or try again.');
+  }finally{
+    btn.disabled=false; btn.textContent='Look up';
+  }
+}
+
+function findCounty(counties,name){
+  const nl=name.toLowerCase();
+  return Object.keys(counties).find(k=>k.toLowerCase().includes(nl))||null;
+}
+
+function setStatus(type,msg){
+  const el=$('addr-status');
+  el.className='addr-status '+type;
+  el.textContent=msg;
+}
+
+function populateStates(){
+  const s=$('state');
+  Object.entries(FMR).sort((a,b)=>a[1].name.localeCompare(b[1].name)).forEach(([c,d])=>{
+    const o=document.createElement('option');o.value=c;o.textContent=d.name;s.appendChild(o);
+  });
+}
+
+function populateCounties(doCalc=true){
+  const st=$('state').value,sel=$('county');
+  sel.innerHTML='<option value="">Select a county</option>';
+  currentFMR=null;
+  $('fmr-display').innerHTML='<div class="fmr-empty">Select a county or enter an address.</div>';
+  if(!st)return;
+  Object.keys(FMR[st].counties).sort().forEach(n=>{
+    const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);
+  });
+  if(doCalc)calc();
+}
+
+function loadFMR(){
+  const st=$('state').value,co=$('county').value,beds=parseInt($('beds').value);
+  const disp=$('fmr-display');
+  if(!st||!co){disp.innerHTML='<div class="fmr-empty">Select a county or enter an address.</div>';currentFMR=null;calc();return;}
+  currentFMR=FMR[st].counties[co][beds];
+  const bl=['Studio','1 bed','2 bed','3 bed','4 bed'][beds];
+  disp.innerHTML=`<div class="fmr-box">
+    <div><div class="fmr-lbl">HUD fair market rent &mdash; ${bl}</div><div class="fmr-sub">${co} &middot; FY2024</div></div>
+    <div><span class="fmr-amt">${fm(currentFMR)}</span><span class="fmr-mo">/mo</span></div>
+  </div>`;
+  calc();
+}
+
+function cls(v,g,o){return v>=g?'pos':v>=o?'warn':'neg';}
+
+function calc(){
+  const price=$m($('price').value),down=$m($('down').value);
+  const mortgage=$m($('mortgage').value),fmr=currentFMR;
+  const taxes=$m($('taxes').value),ins=$m($('insurance').value),mgmt=$m($('mgmt').value);
+  const el=$('results');
+  if(!price||!down||!mortgage||!fmr){
+    el.innerHTML=`<div class="placeholder"><div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><p>Enter property details and an address<br>(or select a county) to see your returns.</p></div>`;
+    return;
+  }
+  const totalExpenses=mortgage+taxes+ins+mgmt;
+  const mCF=fmr-totalExpenses,aNOI=mCF*12;
+  const cap=(aNOI/price)*100,coc=(aNOI/down)*100,gy=((fmr*12)/price)*100;
+  const hasOptional=taxes||ins||mgmt;
+  const expenseNote=hasOptional?` (mortgage${taxes?', taxes':''}${ins?', insurance':''}${mgmt?', mgmt':''})`:' (mortgage only)';
+  const metrics=[
+    {l:'HUD monthly rent',v:fm(fmr),s:'Section 8 FMR ceiling',c:''},
+    {l:'Monthly cash flow',v:fm(mCF),s:'After all expenses',c:mCF>=0?'pos':'neg'},
+    {l:'Annual NOI',v:fm(aNOI),s:'Net operating income',c:aNOI>=0?'pos':'neg'},
+    {l:'Gross yield',v:fp(gy),s:'Annual rent / price',c:cls(gy,8,5)},
+    {l:'Cap rate',v:fp(cap),s:'NOI / price',c:cls(cap,7,4)},
+    {l:'Cash-on-cash',v:fp(coc),s:'NOI / down payment',c:cls(coc,8,4)},
+  ];
+  const chk=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const xmk=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const wrn=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  let vc,vt,vb,vi;
+  if(mCF<0){vc='neg';vt='Deal does not pencil at HUD rents';vb=`Runs ${fm(Math.abs(mCF))}/mo negative${expenseNote}. The FMR ceiling can\u2019t cover these expenses. Try a lower offer, larger down, or more bedrooms.`;vi=xmk;}
+  else if(coc>=8){vc='pos';vt='Strong Section 8 deal';vb=`${fm(mCF)}/mo cash flow${expenseNote} at a ${fp(coc)} cash-on-cash return \u2014 well above the 8% benchmark.`;vi=chk;}
+  else if(coc>=4){vc='warn';vt='Marginal \u2014 proceed with caution';vb=`Positive at ${fm(mCF)}/mo${expenseNote} but ${fp(coc)} CoC is thin. Little room for vacancies or unexpected costs.`;vi=wrn;}
+  else{vc='neg';vt='Returns too thin';vb=`Cash-flow positive at ${fm(mCF)}/mo but ${fp(coc)} CoC is too low for a Section 8 investment. Look for a lower price.`;vi=xmk;}
+  el.innerHTML=`
+    <div class="mgrid">${metrics.map(m=>`<div class="metric ${m.c}"><div class="mlbl">${m.l}</div><div class="mval">${m.v}</div><div class="msub">${m.s}</div></div>`).join('')}</div>
+    <div class="verdict ${vc}"><div class="vi">${vi}</div><div><div class="vt">${vt}</div><div class="vb">${vb}</div></div></div>`;
+}
+
+populateStates();
+</script>
+</body>
+</html>
