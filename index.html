@@ -266,7 +266,45 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229
 .verdict.neg  .vb { color: #7f1d1d; }
 .verdict.warn .vb { color: #78350f; }
 
-.source-note { margin-top: 10px; font-size: 10px; color: var(--t3); line-height: 1.6; }
+
+/* ── MOBILE ── */
+@media (max-width: 700px) {
+  nav {
+    padding: 0 16px;
+    height: 46px;
+  }
+  .nav-sub { display: none; }
+  .live-lbl { display: none; }
+
+  .wrap {
+    grid-template-columns: 1fr;
+    padding: 12px 12px 28px;
+    gap: 12px;
+  }
+
+  .g2 { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .g3 { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .cb { padding: 14px 12px; }
+  .ch { padding: 9px 12px; }
+
+  .mgrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .mval { font-size: 17px; }
+
+  .placeholder { padding: 32px 12px; }
+
+  .source-note { font-size: 9px; }
+}
+
+@media (max-width: 400px) {
+  .g2 { grid-template-columns: 1fr; }
+  .g3 { grid-template-columns: 1fr; }
+  .mgrid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
